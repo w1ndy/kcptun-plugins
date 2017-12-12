@@ -6,5 +6,5 @@ endif
 install: kcptun-client-plugin kcptun-server-plugin lib
 	install -d $(DESTDIR)$(PREFIX)/kcptun_plugins/
 	install -m 755 kcptun-client-plugin kcptun-server-plugin lib $(DESTDIR)$(PREFIX)/kcptun_plugins/
-	ln -s $(DESTDIR)$(PREFIX)/kcptun_plugins/kcptun-client-plugin $(DESTDIR)/usr/bin/kcptun-client-plugin
-	ln -s $(DESTDIR)$(PREFIX)/kcptun_plugins/kcptun-server-plugin $(DESTDIR)/usr/bin/kcptun-server-plugin
+	ln -sf $(DESTDIR)$(PREFIX)/kcptun_plugins/kcptun-client-plugin $(DESTDIR)/usr/bin/kcptun-client-plugin
+	ln -sf $(DESTDIR)$(PREFIX)/kcptun_plugins/kcptun-server-plugin $(DESTDIR)/usr/bin/kcptun-server-plugin

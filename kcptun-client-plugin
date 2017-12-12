@@ -1,0 +1,99 @@
+#!/bin/bash
+
+set -e
+
+cd "$(dirname "$0")"
+source ./lib
+
+print_usage () {
+    echo "USAGE: ss-local ... --plugin kcptun-client-plugin --plugin-opts \"key=YOUR_KEY;raw=YES\""
+    echo "   or  kcptun-client-plugin upgrade"
+    echo "           upgrade KCPTUN and UDP2RAW binaries"
+}
+
+set_raw_defaults () {
+    if [ ! "$raw" == "YES" ]; then
+        info "UDP2RAW is disabled."
+        return 0;
+    fi
+
+    info "UDP2RAW is enabled.";
+
+    if [ ! -z $raw_config ]; then
+        info "Use UDP2RAW config $raw_config."
+        RAW_PARAMS="--conf-file $config"
+        return 0;
+    fi
+
+    find_unused_port
+    RAW_HOST="127.0.0.1"
+    RAW_PORT="$PORT"
+
+    RAW_PARAMS_LISTEN="-l $RAW_HOST:$RAW_PORT"
+    RAW_PARAMS_REMOTE="-r $SS_REMOTE_HOST:$SS_REMOTE_PORT"
+    RAW_PARAMS_MODE="--raw-mode ${raw_mode:-faketcp}"
+    RAW_PARAMS_KEY="--key ${key:-DEFAULT_INSECURE_KEY_RAW}"
+    RAW_PARAMS_CIPHER="--cipher-mode ${raw_cipher:-aes128cbc}"
+    RAW_PARAMS_AUTH="--auth-mode ${raw_auth:-md5}"
+
+    RAW_PARAMS="-c $RAW_PARAMS_LISTEN $RAW_PARAMS_REMOTE $RAW_PARAMS_MODE $RAW_PARAMS_KEY $RAW_PARAMS_CIPHER $RAW_PARAMS_AUTH $raw_params"
+}
+
+set_kcp_defaults () {
+    if [ ! -z $config ]; then
+        info "Use KCPTUN config $config."
+        KCP_PARAMS="-c $config"
+        return 0;
+    fi
+
+    REMOTE_HOST="$SS_LOCAL_HOST"
+    REMOTE_PORT="$SS_LOCAL_PORT"
+    if [ "$raw" == "YES" ]; then
+        REMOTE_HOST="$RAW_HOST"
+        REMOTE_PORT="$RAW_PORT"
+    fi
+
+    KCP_PARAMS_LISTEN="--localaddr $SS_LOCAL_HOST:$SS_LOCAL_PORT"
+    KCP_PARAMS_TARGET="--remoteaddr $REMOTE_HOST:$REMOTE_PORT"
+
+    if [ -z $key ]; then
+        warn "Key unspecified, using DEFAULT_INSECURE_KEY!"
+    fi
+    KCP_PARAMS_KEY="--key ${key:-DEFAULT_INSECURE_KEY}"
+    KCP_PARAMS_CRYPT="--crypt ${crypt:-aes}"
+    KCP_PARAMS_MODE="--mode ${mode:-fast}"
+    KCP_PARAMS_MTU="--mtu ${mtu:-1350}"
+    KCP_PARAMS_SNDWND="--sndwnd ${sndwnd:-1024}"
+    KCP_PARAMS_RCVWND="--rcvwnd ${rcvwnd:-1024}"
+    KCP_PARAMS_DATASHARD="--datashard ${datashard:-10}"
+    KCP_PARAMS_PARITYSHARD="--parityshard ${parityshard:-3}"
+    KCP_PARAMS_DSCP="--dscp ${dscp:-0}"
+    KCP_PARAMS_NOCOMP=$(bool_string $nocomp "--nocomp" "")
+    KCP_PARAMS_QUIET=$(bool_string $quiet "--quiet" "")
+
+    KCP_PARAMS="$KCP_PARAMS_LISTEN $KCP_PARAMS_TARGET $KCP_PARAMS_KEY $KCP_PARAMS_CRYPT $KCP_PARAMS_MODE $KCP_PARAMS_MTU $KCP_PARAMS_SNDWND $KCP_PARAMS_RCVWND $KCP_PARAMS_DATASHARD $KCP_PARAMS_PARITYSHARD $KCP_PARAMS_DSCP $KCP_PARAMS_NOCOMP $KCP_PARAMS_QUIET $params"
+}
+
+main () {
+    if [ -z $SS_LOCAL_PORT ]; then
+        case "$1" in
+            upgrade)
+                rm -rf bin
+                raw="YES"
+                validate_client_assets
+                ;;
+            *)
+                print_usage
+                exit 1
+        esac
+        exit 0;
+    fi
+
+    read_opts
+    validate_client_assets
+    set_raw_defaults
+    set_kcp_defaults
+    spawn_and_wait
+}
+
+main $@

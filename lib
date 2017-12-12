@@ -1,0 +1,125 @@
+# For source only
+
+PLUGIN_BANNER="\033[1;37m[KCPTUN_PLUGIN]"
+
+info () {
+    printf "$PLUGIN_BANNER \033[1;32mINFO \x1b[0m$@\n"
+}
+
+warn () {
+    printf "$PLUGIN_BANNER \033[1;33mWARN \x1b[0m$@\n"
+}
+
+error () {
+    printf "$PLUGIN_BANNER \033[0;31mEMRG \x1b[0m$@\n"
+    exit 1
+}
+
+read_opts () {
+    IFS=';' read -ra OPTS <<< "$SS_PLUGIN_OPTIONS"
+    for i in "${OPTS[@]}"; do
+        eval $i
+    done
+}
+
+bool_string () {
+    if [ "$1" == "YES" ]; then
+        echo $2;
+    else
+        echo $3;
+    fi
+}
+
+find_unused_port () {
+    read lower_port upper_port < /proc/sys/net/ipv4/ip_local_port_range
+    while :
+    do
+        PORT=$(shuf -i $lower_port-$upper_port -n 1)
+        ss -lpn | grep -q ":$PORT" || break
+    done
+}
+
+download_github_latest_release () {
+    local repo=$1
+    local filename=$2
+
+    DOWNLOAD_DIR="/tmp/kcptun_plugin"
+
+    rm -rf $DOWNLOAD_DIR && mkdir $DOWNLOAD_DIR
+    ARCHIVE=$(find /tmp -regex "$filename" -print -quit)
+    if [ ! -z $ARCHIVE ]; then
+        info "Using local archive $ARCHIVE."
+    else
+        local regex="href=\"(/$repo/releases/download/[v\.0-9]+/($filename))"
+        local escaped=$(eval "echo $repo")
+        local latest=$(curl -L https://github.com/$escaped/releases/latest)
+        if [[ "$latest" =~ $regex ]]; then
+            DOWNLOAD_URL="https://github.com${BASH_REMATCH[1]}"
+            DOWNLOAD_FILENAME=${BASH_REMATCH[2]};
+        else
+            error "Unable to find download URL!"
+        fi
+        ARCHIVE="$DOWNLOAD_DIR/$DOWNLOAD_FILENAME"
+        info "Downloading $ARCHIVE from $DOWNLOAD_URL..."
+        wget $DOWNLOAD_URL -O $ARCHIVE -q --show-progress;
+    fi
+    tar zxf $ARCHIVE -C $DOWNLOAD_DIR > /dev/null
+}
+
+download_kcptun_server () {
+    info "Downloading KCPTUN server..."
+    download_github_latest_release "xtaci/kcptun" "kcptun\-linux\-amd64\-[0-9]+\.tar\.gz"
+    mv $DOWNLOAD_DIR/server_linux_amd64 bin/kcptun_server && rm -rf $DOWNLOAD_DIR
+    info "KCPTUN server installed to \"bin/kcptun_server\""
+}
+
+download_kcptun_client () {
+    info "Downloading KCPTUN client..."
+    download_github_latest_release "xtaci/kcptun" "kcptun\-linux\-amd64\-[0-9]+\.tar\.gz"
+    mv $DOWNLOAD_DIR/client_linux_amd64 bin/kcptun_client && rm -rf $DOWNLOAD_DIR
+    info "KCPTUN client installed to \"bin/kcptun_client\""
+}
+
+download_udp2raw () {
+    info "Downloading UDP2RAW..."
+    download_github_latest_release "wangyu\-/udp2raw\-tunnel" "udp2raw_binaries\.tar\.gz"
+    mv $DOWNLOAD_DIR/udp2raw_amd64_hw_aes bin/udp2raw && rm -rf $DOWNLOAD_DIR
+    info "UDP2RAW installed to \"bin/udp2raw\""
+}
+
+validate_server_assets () {
+    if [ ! -d bin ]; then mkdir bin; fi
+    if [ ! -f bin/kcptun_server ]; then download_kcptun_server; fi
+    if [ ! -f bin/udp2raw ] && [ "$raw" == "YES" ]; then download_udp2raw; fi
+    KCP_BINARY=bin/kcptun_server
+    RAW_BINARY=bin/udp2raw
+}
+
+validate_client_assets () {
+    if [ ! -d bin ]; then mkdir bin; fi
+    if [ ! -f bin/kcptun_client ]; then download_kcptun_client; fi
+    if [ ! -f bin/udp2raw ] && [ "$raw" == "YES" ]; then download_udp2raw; fi
+    KCP_BINARY=bin/kcptun_client
+    RAW_BINARY=bin/udp2raw
+}
+
+clean_up () {
+    info "Exiting plugin..."
+    pkill -P $$
+}
+
+spawn_and_wait () {
+    info "Starting plugin..."
+    trap clean_up EXIT
+
+    $KCP_BINARY $KCP_PARAMS &
+    local kcp=$!
+
+    if [ ! "$raw" == "YES" ]; then
+        wait $kcp;
+    else
+        $RAW_BINARY $RAW_PARAMS &
+        local raw=$!
+        wait $kcp $raw;
+    fi
+}

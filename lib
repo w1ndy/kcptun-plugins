@@ -118,8 +118,13 @@ spawn_and_wait () {
     if [ ! "$raw" == "YES" ]; then
         wait $kcp;
     else
+        trap 'exit 0' CHLD
         $RAW_BINARY $RAW_PARAMS &
         local raw=$!
-        wait $kcp $raw;
+        set -m
+        wait
+        set +m;
     fi
+
+    clean_up
 }

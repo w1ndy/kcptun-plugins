@@ -46,7 +46,7 @@ download_github_latest_release () {
     DOWNLOAD_DIR="/tmp/kcptun_plugin"
 
     rm -rf $DOWNLOAD_DIR && mkdir $DOWNLOAD_DIR
-    ARCHIVE=$(find /tmp -regex "$filename" -print -quit)
+    ARCHIVE=$(find /tmp -regex "$filename" -maxdepth 1 -print -quit)
     if [ ! -z $ARCHIVE ]; then
         info "Using local archive $ARCHIVE."
     else

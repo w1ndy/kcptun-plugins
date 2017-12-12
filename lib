@@ -61,7 +61,7 @@ download_github_latest_release () {
         fi
         ARCHIVE="$DOWNLOAD_DIR/$DOWNLOAD_FILENAME"
         info "Downloading $ARCHIVE from $DOWNLOAD_URL..."
-        wget $DOWNLOAD_URL -O $ARCHIVE -q --show-progress;
+        wget $DOWNLOAD_URL -O $ARCHIVE;
     fi
     tar zxf $ARCHIVE -C $DOWNLOAD_DIR > /dev/null
 }

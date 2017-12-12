@@ -2,7 +2,7 @@
 
 set -e
 
-cd "$(dirname "$(realpath "$0")")"
+cd /usr/local/kcptun_plugins
 source ./lib
 
 print_usage () {

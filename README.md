@@ -1,33 +1,36 @@
 # KCPTUN Plugins
 
-SIP003-compatible KCPTUN and UDP2RAW plugins for Shadowsocks.
-Latest KCPTUN and UDP2RAW binaries will be automatically downloaded at the first-time run.
+This repository features:
+
+* SIP003-compatible KCPTUN and UDP2RAW plugins for Shadowsocks
+* One-key setup of Shadowsocks+KCPTUN+UDP2RAW
+* Automatic upgrade of latest KCPTUN and UDP2RAW binaries
 
 ## Usage
 
 Install:
 
 ```bash
-make install
+# make install
 ```
 
 Server:
 
 ```bash
-ss-server ... --plugin kcptun-server-plugin --plugin-opts "key=YOUR_KEY;raw=YES"
+# ss-server ... --plugin kcptun-server-plugin --plugin-opts "key=YOUR_KEY;raw=YES"
 ```
 
 Client:
 
 ```bash
-ss-local ... --plugin kcptun-client-plugin --plugin-opts "key=YOUR_KEY;raw=YES"
+# ss-local ... --plugin kcptun-client-plugin --plugin-opts "key=YOUR_KEY;raw=YES"
 ```
 
 Upgrade binaries:
 
 ```bash
-kcptun-server-plugin upgrade
-kcptun-client-plugin upgrade
+# kcptun-server-plugin upgrade
+# kcptun-client-plugin upgrade
 ```
 
 ## Plugin Options
@@ -58,3 +61,9 @@ UDP2RAW:
 * raw_cipher: UDP2RAW cipher mode (``--cipher-mode``)
 * raw_auth: UDP2RAW auth mode (``--auth-mode``)
 * raw_params: specify other parameters like ``raw_params=\"--seq-mode 0\"``
+
+
+## Related Projects
+
+* [KCPTUN](https://github.com/xtaci/kcptun)
+* [UDP2RAW](https://github.com/wangyu-/udp2raw-tunnel)

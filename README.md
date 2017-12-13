@@ -55,7 +55,7 @@ KCPTUN:
 UDP2RAW:
 
 * raw: ``YES`` to enable UDP2RAW
-* raw_config: UDP2RAW config. Override all other KCPTUN options. (``--conf-file``)
+* raw_config: UDP2RAW config. Override all other UDP2RAW options. (``--conf-file``)
 * raw_mode: UDP2RAW mode (``--raw-mode``)
 * key: KCPTUN and UDP2RAW encryption key (``--key``)
 * raw_cipher: UDP2RAW cipher mode (``--cipher-mode``)

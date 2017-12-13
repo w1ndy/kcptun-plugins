@@ -46,7 +46,6 @@ KCPTUN:
 * rcvwnd: KCPTUN receive window (``--rcvwnd``)
 * datashard: KCPTUN datashard (``--datashard``)
 * parityshard: KCPTUN parityshard (``--parityshard``)
-* parityshard: KCPTUN parityshard (``--parityshard``)
 * dscp: KCPTUN dscp (``--dscp``)
 * nocomp: ``YES`` to disable KCPTUN compression (``--nocomp``)
 * quiet: ``YES`` to suppress KCPTUN output (``--quiet``)

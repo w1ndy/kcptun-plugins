@@ -35,7 +35,14 @@ set_kcp_defaults () {
     KCP_PARAMS_KEY="--key ${key:-DEFAULT_INSECURE_KEY}"
     KCP_PARAMS_CRYPT="--crypt ${crypt:-aes}"
     KCP_PARAMS_MODE="--mode ${mode:-fast}"
-    KCP_PARAMS_MTU="--mtu ${mtu:-1350}"
+
+    if [ "$raw" == "YES" ]; then
+        # default MTU to 1200 in RAW mode
+        KCP_PARAMS_MTU="--mtu ${mtu:-1200}";
+    else
+        KCP_PARAMS_MTU="--mtu ${mtu:-1350}";
+    fi
+
     KCP_PARAMS_SNDWND="--sndwnd ${sndwnd:-1024}"
     KCP_PARAMS_RCVWND="--rcvwnd ${rcvwnd:-1024}"
     KCP_PARAMS_DATASHARD="--datashard ${datashard:-10}"
@@ -68,7 +75,7 @@ set_raw_defaults () {
     RAW_PARAMS_CIPHER="--cipher-mode ${raw_cipher:-aes128cbc}"
     RAW_PARAMS_AUTH="--auth-mode ${raw_auth:-md5}"
 
-    RAW_PARAMS="-s $RAW_PARAMS_LISTEN $RAW_PARAMS_REMOTE $RAW_PARAMS_MODE $RAW_PARAMS_KEY $RAW_PARAMS_CIPHER $RAW_PARAMS_AUTH $raw_params"
+    RAW_PARAMS="-s -a $RAW_PARAMS_LISTEN $RAW_PARAMS_REMOTE $RAW_PARAMS_MODE $RAW_PARAMS_KEY $RAW_PARAMS_CIPHER $RAW_PARAMS_AUTH $raw_params"
 }
 
 main () {

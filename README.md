@@ -35,9 +35,17 @@ ss-proxy -s Server_IP -p Server_Port -l Local_Port --plugin kcptun-client-plugin
 Upgrade binaries:
 
 ```bash
-# kcptun-server-plugin upgrade
-# kcptun-client-plugin upgrade
+kcptun-server-plugin upgrade
+kcptun-client-plugin upgrade
 ```
+
+Upgrade binaries with proxychains-ng:
+
+```bash
+PROXY=proxychains4 kcptun-server-plugin upgrade
+PROXY=proxychains4 kcptun-client-plugin upgrade
+```
+
 
 ## Plugin Options
 

@@ -17,13 +17,19 @@ Install:
 Server:
 
 ```bash
-# ss-server ... --plugin kcptun-server-plugin --plugin-opts "key=YOUR_KEY;raw=YES"
+ss-server ... --plugin kcptun-server-plugin --plugin-opts "key=YOUR_KEY;raw=YES"
 ```
 
 Client:
 
 ```bash
-# ss-local ... --plugin kcptun-client-plugin --plugin-opts "key=YOUR_KEY;raw=YES"
+ss-local ... --plugin kcptun-client-plugin --plugin-opts "key=YOUR_KEY;raw=YES"
+```
+
+Client for proxying only:
+
+```bash
+ss-proxy -s Server_IP -p Server_Port -l Local_Port --plugin kcptun-client-plugin --plugin-opts "key=YOUR_KEY;raw=YES"
 ```
 
 Upgrade binaries:

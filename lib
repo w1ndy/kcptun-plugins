@@ -130,7 +130,7 @@ spawn_and_wait () {
         wait $kcp;
     else
         trap 'exit 0' CHLD
-        $RAW_BINARY $RAW_PARAMS | sed "s/^/$RAW_BANNER/" &
+        $RAW_BINARY $RAW_PARAMS 2>&1 | sed "s/^/$RAW_BANNER/" &
         local raw=$!
         set -m
         wait

@@ -45,6 +45,10 @@ download_github_latest_release () {
 
     DOWNLOAD_DIR="/tmp/kcptun_plugin"
 
+    if [ ! -z "$PROXY" ]; then
+        info "Using proxy tunnel: $PROXY";
+    fi
+
     rm -rf $DOWNLOAD_DIR && mkdir $DOWNLOAD_DIR
     ARCHIVE=$(find /tmp -maxdepth 1 -regex "$filename" -print -quit)
     if [ ! -z $ARCHIVE ]; then
@@ -52,7 +56,7 @@ download_github_latest_release () {
     else
         local regex="href=\"(/$repo/releases/download/[v\.0-9]+/($filename))"
         local escaped=$(eval "echo $repo")
-        local latest=$(curl -L https://github.com/$escaped/releases/latest)
+        local latest=$($PROXY curl -L https://github.com/$escaped/releases/latest)
         if [[ "$latest" =~ $regex ]]; then
             DOWNLOAD_URL="https://github.com${BASH_REMATCH[1]}"
             DOWNLOAD_FILENAME=${BASH_REMATCH[2]};
@@ -61,7 +65,7 @@ download_github_latest_release () {
         fi
         ARCHIVE="$DOWNLOAD_DIR/$DOWNLOAD_FILENAME"
         info "Downloading $ARCHIVE from $DOWNLOAD_URL..."
-        wget $DOWNLOAD_URL -O $ARCHIVE;
+        $PROXY wget $DOWNLOAD_URL -O $ARCHIVE;
     fi
     tar zxf $ARCHIVE -C $DOWNLOAD_DIR > /dev/null
 }

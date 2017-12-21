@@ -1,17 +1,24 @@
 # For source only
 
 PLUGIN_BANNER="\033[1;37m[KCPTUN_PLUGIN]"
+INFO_BANNER="$PLUGIN_BANNER \033[1;32mINFO \x1b[0m"
+WARN_BANNER="$PLUGIN_BANNER \033[1;33mWARN \x1b[0m"
+ERROR_BANNER="$PLUGIN_BANNER \033[0;31mEMRG \x1b[0m"
+
+ESC=$(printf '\033')
+KCP_BANNER="${ESC}\[1;37m\[KCPTUN_PLUGIN\] ${ESC}\[1;32mKCPT ${ESC}\[0m"
+RAW_BANNER="${ESC}\[1;37m\[KCPTUN_PLUGIN\] ${ESC}\[1;32mUDPR ${ESC}\[0m"
 
 info () {
-    printf "$PLUGIN_BANNER \033[1;32mINFO \x1b[0m$@\n"
+    printf "$INFO_BANNER$@\n"
 }
 
 warn () {
-    printf "$PLUGIN_BANNER \033[1;33mWARN \x1b[0m$@\n"
+    printf "$WARN_BANNER$@\n"
 }
 
 error () {
-    printf "$PLUGIN_BANNER \033[0;31mEMRG \x1b[0m$@\n"
+    printf "$ERROR_BANNER$@\n"
     exit 1
 }
 
@@ -116,14 +123,14 @@ spawn_and_wait () {
     info "Starting plugin..."
     trap clean_up EXIT
 
-    $KCP_BINARY $KCP_PARAMS &
+    $KCP_BINARY $KCP_PARAMS 2>&1 | sed "s/^/$KCP_BANNER/" &
     local kcp=$!
 
     if [ ! "$raw" == "YES" ]; then
         wait $kcp;
     else
         trap 'exit 0' CHLD
-        $RAW_BINARY $RAW_PARAMS &
+        $RAW_BINARY $RAW_PARAMS | sed "s/^/$RAW_BANNER/" &
         local raw=$!
         set -m
         wait

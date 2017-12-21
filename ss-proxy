@@ -1,0 +1,66 @@
+#!/bin/bash
+
+print_usage () {
+    echo "ss-proxy - proxying Shadowsocks data streams with SIP003-compatible plugins"
+    echo "USAGE: ss-proxy -s Server_IP -p Server_Port [-c Local_Host] -l Local_Port --plugin Plugin_Binary [--plugin-opts Plugin_Options]"
+    exit 1
+}
+
+main () {
+    SS_LOCAL_HOST="0.0.0.0"
+    SS_PLUGIN_OPTIONS=""
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -h|--help)
+                print_usage
+                ;;
+            -s)
+                SS_REMOTE_HOST="$2"
+                shift
+                shift
+                ;;
+            -p)
+                SS_REMOTE_PORT="$2"
+                shift
+                shift
+                ;;
+            -c)
+                SS_LOCAL_HOST="$2"
+                shift
+                shift
+                ;;
+            -l)
+                SS_LOCAL_PORT="$2"
+                shift
+                shift
+                ;;
+            --plugin)
+                PLUGIN="$2"
+                shift
+                shift
+                ;;
+            --plugin-opts)
+                SS_PLUGIN_OPTIONS="$2"
+                shift
+                shift
+                ;;
+            *)
+                print_usage
+                ;;
+        esac;
+    done
+
+    if [ -z $SS_REMOTE_HOST ] || [ -z $SS_REMOTE_PORT ] || [ -z $SS_LOCAL_HOST ] || [ -z $SS_LOCAL_PORT ] || [ -z $PLUGIN ]; then
+        print_usage;
+    fi
+
+    export SS_REMOTE_HOST
+    export SS_REMOTE_PORT
+    export SS_LOCAL_HOST
+    export SS_LOCAL_PORT
+    export SS_PLUGIN_OPTIONS
+    $PLUGIN
+}
+
+main $@

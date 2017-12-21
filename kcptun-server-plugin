@@ -2,7 +2,10 @@
 
 set -e
 
-cd /usr/local/kcptun_plugins
+if [ ! -f $(basename $0) ]; then
+    cd /usr/local/kcptun_plugins;
+fi
+
 source ./lib
 
 print_usage () {

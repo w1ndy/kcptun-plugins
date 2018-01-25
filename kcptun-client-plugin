@@ -49,8 +49,8 @@ set_kcp_defaults () {
         return 0;
     fi
 
-    REMOTE_HOST="$SS_LOCAL_HOST"
-    REMOTE_PORT="$SS_LOCAL_PORT"
+    REMOTE_HOST="$SS_REMOTE_HOST"
+    REMOTE_PORT="$SS_REMOTE_PORT"
     if [ "$raw" == "YES" ]; then
         REMOTE_HOST="$RAW_HOST"
         REMOTE_PORT="$RAW_PORT"

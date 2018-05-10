@@ -46,6 +46,7 @@ PROXY=proxychains4 kcptun-server-plugin upgrade
 PROXY=proxychains4 kcptun-client-plugin upgrade
 ```
 
+Note: you may also place predownloaded archives in /tmp if the network condition is really bad.
 
 ## Plugin Options
 

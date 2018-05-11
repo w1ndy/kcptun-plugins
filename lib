@@ -57,7 +57,7 @@ download_github_latest_release () {
     fi
 
     rm -rf $DOWNLOAD_DIR && mkdir $DOWNLOAD_DIR
-    ARCHIVE=$(find /tmp -maxdepth 1 -regex "$filename" -print -quit)
+    ARCHIVE=$(find /tmp -maxdepth 1 -regex ".*/$filename" -print | head -n 1)
     if [ ! -z $ARCHIVE ]; then
         info "Using local archive $ARCHIVE."
     else

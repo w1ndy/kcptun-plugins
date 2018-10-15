@@ -2,7 +2,7 @@
 
 This repository features:
 
-* SIP003-compatible KCPTUN and UDP2RAW plugins for Shadowsocks
+* [SIP003](https://github.com/shadowsocks/shadowsocks-org/issues/28)-compatible KCPTUN and UDP2RAW plugins for Shadowsocks
 * One-key setup of Shadowsocks+KCPTUN+UDP2RAW
 * Automatic upgrade of latest KCPTUN and UDP2RAW binaries
 * IPv6 support

@@ -5,6 +5,7 @@ This repository features:
 * SIP003-compatible KCPTUN and UDP2RAW plugins for Shadowsocks
 * One-key setup of Shadowsocks+KCPTUN+UDP2RAW
 * Automatic upgrade of latest KCPTUN and UDP2RAW binaries
+* IPv6 support
 
 ## Usage
 
@@ -76,6 +77,9 @@ UDP2RAW:
 * raw_auth: UDP2RAW auth mode (``--auth-mode``)
 * raw_params: specify other parameters like ``raw_params=\"--seq-mode 0\"``
 
+## Todo
+
+* [ ] Support for multiple interface binding
 
 ## Related Projects
 

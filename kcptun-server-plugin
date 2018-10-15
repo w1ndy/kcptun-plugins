@@ -70,8 +70,12 @@ set_raw_defaults () {
         RAW_PARAMS="--conf-file $config"
         return 0;
     fi
-
-    RAW_PARAMS_LISTEN="-l $SS_REMOTE_HOST:$SS_REMOTE_PORT"
+    
+    if [[ $SS_REMOTE_HOST == *":"* ]] && [[ $SS_REMOTE_HOST != "["* ]]; then
+        RAW_PARAMS_LISTEN="-l [$SS_REMOTE_HOST]:$SS_REMOTE_PORT"
+    else
+        RAW_PARAMS_LISTEN="-l $SS_REMOTE_HOST:$SS_REMOTE_PORT"
+    fi
     RAW_PARAMS_REMOTE="-r $KCP_HOST:$KCP_PORT"
     RAW_PARAMS_MODE="--raw-mode ${raw_mode:-faketcp}"
     RAW_PARAMS_KEY="--key ${key:-DEFAULT_INSECURE_KEY_RAW}"

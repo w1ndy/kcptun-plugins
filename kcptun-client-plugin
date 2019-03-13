@@ -60,6 +60,13 @@ set_kcp_defaults () {
         REMOTE_PORT="$RAW_PORT"
     fi
 
+    if [[ $SS_LOCAL_HOST == *":"* ]] && [[ $SS_LOCAL_HOST != "["* ]]; then
+        SS_LOCAL_HOST="[$SS_LOCAL_HOST]"
+    fi
+    if [[ $REMOTE_HOST == *":"* ]] && [[ $REMOTE_HOST != "["* ]]; then
+        REMOTE_HOST="[$REMOTE_HOST]"
+    fi
+
     KCP_PARAMS_LISTEN="--localaddr $SS_LOCAL_HOST:$SS_LOCAL_PORT"
     KCP_PARAMS_TARGET="--remoteaddr $REMOTE_HOST:$REMOTE_PORT"
 
